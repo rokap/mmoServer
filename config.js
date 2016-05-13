@@ -1,5 +1,6 @@
 var config = {
     port: 3000,
+    useDB: false,
     db: {
         host: 'localhost',
         user: 'root',
