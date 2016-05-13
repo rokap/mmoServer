@@ -19,7 +19,61 @@
 to stop the server, press **CTRL + C**, repeat step 3 to restart
 
 ## Adding Events
+Events should all be stored in the events folder, and the filename given is the acting group of all those events.
+A simple example of what a basic event should look like
 
+Create a file called **example.js** in the events folder, and paste or type in the following code
+
+```
+// Load Utilities, for Debugging Purposes
+var utilities = require('../libs/utilities');
+
+// Setup Module
+module.exports = function (io, socket) {
+
+    // Setup our First Event
+    socket.on("server:firstEvent", function (data) {
+        // Handle data if there is any
+        // Send response to client with any return data
+        // data is optional on the in/out
+        socket.emit("client:firstEvent", data); // Will send back to the client asking
+    });
+
+    // Setup our Second Event
+    socket.on("server:secondEvent", function (data) {
+        // Handle data if there is any
+        // Send response to client with any return data
+        // data is optional on the in/out
+        socket.emit("client:secondEvent", data); // Will send back to the client asking
+    });
+
+    // ETC
+};
+```
+
+Real Application might look something like
+
+```
+var utilities = require('../libs/utilities');
+module.exports = function (io, socket) {
+
+    socket.on("connect", function (data) {
+        // Handle data
+        // Send response to all clients
+        utilities.debug(socket, "Connected");
+        io.emit("client:clientConnected", data); // Let all connected users know about this new connection
+        socket.emit("client:connect", data); // Do something special for the client connecting
+    });
+
+    socket.on("disconnect", function (data) {
+        // Handle data
+        // Send response to all clients
+        utilities.debug(socket, "Disconnect");
+        io.emit("client:disconnect", data); // Let all connected users know this connection disconnected
+    });
+
+};
+```
 
 ## Event Types
 ```
