@@ -1,7 +1,7 @@
 // Load/Setup Libraries
-var config = require('./config');
-//var db = require('./mysql'); // Uncomment to use, Check Config settings first.
-var utilities = require('./utilities');
+var config = require('./libs/config');
+//var db = require('./libs/mysql'); // Uncomment to use, Check Config settings first.
+var utilities = require('./libs/utilities');
 var io = require('socket.io')({
     transports: ['websocket']
 });

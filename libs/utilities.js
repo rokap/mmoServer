@@ -1,6 +1,3 @@
-/**
- * Created by davidk on 5/13/2016.
- */
 var utilities = {
     debug: function (s, m) {
         var d = this.getFormattedDate();
