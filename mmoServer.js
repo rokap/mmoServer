@@ -1,43 +1,19 @@
 // Load/Setup Libraries
 var config = require('./config');
-var mysql = require('mysql');
+//var db = require('./mysql'); // Uncomment to use, Check Config settings first.
+var utilities = require('./utilities');
 var io = require('socket.io')({
     transports: ['websocket']
 });
 
-if (config.useDB) {
-// Define our db credentials
-    var db = mysql.createConnection({
-        host: config.db.host,
-        user: config.db.user,
-        password: config.db.password,
-        database: config.db.database
-    });
-
-// Log any errors connected to the db
-    db.connect(function (err) {
-        if (err) console.log(err);
-        Debug("Core", "Using Mysql");
-    });
-}
-
 // Attach a Listener
 io.attach(config.port);
-Debug("Core", "Starting Server *:" + config.port);
+utilities.debug("Core", "Starting Server *:" + config.port);
 
 // Start Events
 io.on('connection', function (socket) {
-    Debug(socket, "Connected");
+    utilities.debug(socket, "Connected");
     socket.on('disconnect', function () {
-        Debug(socket, "Disconnected");
+        utilities.debug(socket, "Disconnected");
     });
 });
-
-function Debug(s, m) {
-    var d = getFormattedDate();
-    console.log(d + " | " + ((typeof s === 'object') ? s.id : s) + ": " + m);
-}
-function getFormattedDate() {
-    var date = new Date();
-    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-}
