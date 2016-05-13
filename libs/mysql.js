@@ -1,4 +1,4 @@
-var config = require('./libs/config');
+var config = require('./config');
 var utilities = require('./libs/utilities');
 var mysql = require('mysql');
 
