@@ -1,6 +1,5 @@
 // Load/Setup Libraries
 var config = require('./config');
-//var db = require('./libs/mysql');
 var utilities = require('./libs/utilities');
 var io = require('socket.io')({
     transports: ['websocket']
