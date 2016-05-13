@@ -1,4 +1,4 @@
-var utilities = {
+module.exports = {
     debug: function (s, m) {
         var d = this.getFormattedDate();
         console.log(d + " | " + ((typeof s === 'object') ? s.id : s) + ": " + m);
@@ -8,4 +8,3 @@ var utilities = {
         return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     }
 };
-module.exports = utilities;
