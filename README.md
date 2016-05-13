@@ -1,4 +1,10 @@
 # mmoServer
 
-# Requirements #
-	1. nodejs - https://nodejs.org/en/
+## Requirements
+- nodejs - https://nodejs.org/en/
+
+## Install
+
+## Starting Server
+
+## Extending server
