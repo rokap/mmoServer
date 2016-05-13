@@ -4,19 +4,20 @@ var mysql = require('mysql');
 var io = require('socket.io')({
     transports: ['websocket']
 });
-console.log(config);
+if (config.useDB) {
 // Define our db credentials
-var db = mysql.createConnection({
-    host: config.db.host,
-    user: config.db.user,
-    password: config.db.password,
-    database: config.db.database
-});
+    var db = mysql.createConnection({
+        host: config.db.host,
+        user: config.db.user,
+        password: config.db.password,
+        database: config.db.database
+    });
 
 // Log any errors connected to the db
-db.connect(function (err) {
-    if (err) console.log(err)
-});
+    db.connect(function (err) {
+        if (err) console.log(err)
+    });
+}
 
 // Attach a Listener
 io.attach(config.port);
