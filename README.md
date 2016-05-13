@@ -16,6 +16,6 @@
 2. hold SHIFT + Right click -> open cammand prompt here ( windows )
 3. type **node mmoServer**, press enter
 
-to stop the server, press ** CTRL + C ** , repeat step 3 to restart
+to stop the server, press **CTRL + C** , repeat step 3 to restart
 
 ## Extending server
