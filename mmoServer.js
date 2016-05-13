@@ -4,6 +4,7 @@ var mysql = require('mysql');
 var io = require('socket.io')({
     transports: ['websocket']
 });
+
 if (config.useDB) {
 // Define our db credentials
     var db = mysql.createConnection({
@@ -15,12 +16,14 @@ if (config.useDB) {
 
 // Log any errors connected to the db
     db.connect(function (err) {
-        if (err) console.log(err)
+        if (err) console.log(err);
+        Debug("Core", "Using Mysql");
     });
 }
 
 // Attach a Listener
 io.attach(config.port);
+Debug("Core", "Starting Server *:" + config.port);
 
 // Start Events
 io.on('connection', function (socket) {
@@ -32,7 +35,7 @@ io.on('connection', function (socket) {
 
 function Debug(s, m) {
     var d = getFormattedDate();
-    console.log(d + " | " + s.id + ": " + m);
+    console.log(d + " | " + ((typeof s === 'object') ? s.id : s) + ": " + m);
 }
 function getFormattedDate() {
     var date = new Date();

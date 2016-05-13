@@ -1,12 +1,16 @@
 var config = {
+    appName: "mmoServer",
     port: 3000,
-    useDB: false,
+    useDB: true,
     db: {
         host: 'localhost',
         user: 'root',
-        password: '',
-        database: 'database'
+        password: 'hobbes03',
+        database: 'chat'
     }
 };
+
+process.title = config.appName;
+process.stdout.write('\033c');
 
 module.exports = config;
