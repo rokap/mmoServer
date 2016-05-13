@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "MMO Server Framework",
   "dependencies": {
+    "mysql": "^2.10.2",
     "socket.io": "^1.4.6"
   }
 }
