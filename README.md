@@ -1,4 +1,5 @@
-# mmoServer
+# mmoServer - for Unity3D
+description coming soon
 
 ## Requirements
 - nodejs - https://nodejs.org/en/
