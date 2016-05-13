@@ -24,7 +24,7 @@ A simple example of what a basic event should look like
 
 Create a file called **example.js** in the events folder, and paste or type in the following code
 
-**example/client.js**
+**events/example.js**
 
 ```
 // Load Utilities, for Debugging Purposes
