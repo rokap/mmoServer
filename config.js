@@ -1,7 +1,7 @@
 var config = {
     appName: "mmoServer",
     port: 3000,
-    useDB: true,
+    useDB: false,
     db: {
         host: 'localhost',
         user: 'root',
