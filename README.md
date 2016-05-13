@@ -1,3 +1,3 @@
 # mmoServer
 
-Coming Soon!
+Coming Soon
