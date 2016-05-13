@@ -11,11 +11,10 @@
 5. open mmoServer.js and uncommnt var db = require('./libs/mysql'); if you want to use mysql
 6. open config.js and update db settings
 
-## Starting Server
+## Starting/Stopping Server
 1. navigate to your project folder
 2. hold SHIFT + Right click -> open cammand prompt here ( windows )
 3. type **node mmoServer**, press enter
-
-## Starting Server
+( to stop the server, press ** CTRL + C ** , repeat step 3 to restart )
 
 ## Extending server
