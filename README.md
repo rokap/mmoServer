@@ -58,7 +58,7 @@ Real Application might look something like
 
 **events/client.js**
 
-```
+```javascript
 var utilities = require('../libs/utilities');
 module.exports = function (io, socket) {
 
@@ -81,7 +81,7 @@ module.exports = function (io, socket) {
 ```
 
 ## Event Types
-```
+```javascript
 // sending to sender-client only
 socket.emit('message', "this is a test");
 
