@@ -134,8 +134,8 @@ module.exports = function (io, socket, db) {
                     // Available, Create account
                     utilities.debug(socket, "Character " + data.name + " is available, Creating");
                     db.query(
-                        "INSERT INTO characters (name,account,class,level) VALUES (?,?,?,?)",
-                        [data.name, account.account, data.class, 1]
+                        "INSERT INTO characters (name,account,class,race,gender,level) VALUES (?,?,?,?,?,?)",
+                        [data.name, account.account, data.class, data.race, data.gender, 1]
                     );
                     socket.emit('client:createCharacter', {characterExists: createCharacter})
                 }
