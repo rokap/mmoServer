@@ -4,7 +4,7 @@ description coming soon
 ## Requirements
 - nodejs - https://nodejs.org/en/
 
-## Installation & Configuration
+## Installation / Configuration
 1. download and install nodejs
 2. navigate to your project folder
 3. hold **SHIFT + Right Click**, then select **open command prompt window here** ( windows )
@@ -12,9 +12,9 @@ description coming soon
 5. open **mmoServer.js and** uncomment var db = require('./libs/mysql'); **if you want to use mysql (Optional)**
 6. Rename **config.js.dist** to **config.js**, then open and update db settings
 
-## Starting/Stopping Server
+## Starting / Stopping Server
 1. navigate to your project folder
-2. hold **SHIFT + Right click** then **open command prompt here* ( windows )
+2. hold **SHIFT + Right click** then **open command prompt here** ( windows )
 3. type **node mmoServer**, press enter
 
 to stop the server, press **CTRL + C**, repeat step 3 to restart
@@ -27,7 +27,7 @@ Create a file called **example.js** in the events folder, and paste or type in t
 
 **events/example.js**
 
-```
+```javascript
 // Load Utilities, for Debugging Purposes
 var utilities = require('../libs/utilities');
 
