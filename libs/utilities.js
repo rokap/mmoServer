@@ -3,8 +3,9 @@ module.exports = {
 
         if (typeof s === 'object')
             var ip = s.request.connection.remoteAddress;
+
         var d = this.getFormattedDate();
-        console.log(d + ": " + ((typeof s === 'object') ? s.id + "(" + ip : s) + ") " + m);
+        console.log(d + ": " + ((typeof s === 'object') ? s.id + "(" + ip + ")" : s) + ": " + m);
     },
     getFormattedDate: function () {
         var date = new Date();
