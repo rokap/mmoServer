@@ -9,12 +9,12 @@ description coming soon
 2. navigate to your project folder
 3. hold **SHIFT + Right Click**, then select **open command prompt window here** ( windows )
 4. type **npm install**, press enter
-5. open mmoServer.js and uncommnt var db = require('./libs/mysql'); if you want to use mysql
-6. open config.js and update db settings
+5. open mmoServer.js and uncomment var db = require('./libs/mysql'); if you want to use mysql
+6. Rename **config.js.dist** to **config.js**, then open and update db settings
 
 ## Starting/Stopping Server
 1. navigate to your project folder
-2. hold SHIFT + Right click -> open cammand prompt here ( windows )
+2. hold **SHIFT + Right click** then **open command prompt here* ( windows )
 3. type **node mmoServer**, press enter
 
 to stop the server, press **CTRL + C**, repeat step 3 to restart
