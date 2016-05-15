@@ -8,6 +8,7 @@ module.exports = function (io, socket, db) {
         username: 'Anonymous',
         email: ''
     };
+    var character = {};
 
     utilities.debug(socket, "Init Handler (server:register)");
     socket.on("server:register", function (data) {
@@ -101,7 +102,6 @@ module.exports = function (io, socket, db) {
     utilities.debug(socket, "Init Handler (server:selectCharacter)");
     socket.on("server:selectCharacter", function (data) {
 
-        var character = {};
 
         utilities.debug(socket, "server:selectCharacter (" + JSON.stringify(data) + ")");
         db.query("SELECT `id`,  `name`,  `class`,  `prefab`,  `gender`,  `level`,  `posX`,  `posY`,  `posZ`,  `rot` FROM characters WHERE id = ? && account = ? ", [data.id, account.account])
@@ -149,6 +149,14 @@ module.exports = function (io, socket, db) {
         utilities.debug(socket, "server:deleteCharacter (" + JSON.stringify(data) + ")");
         db.query("DELETE FROM characters where id = '" + data.id + "'");
         socket.emit("client:deleteCharacter", {deleted: true})
+    });
+
+    utilities.debug(socket, "Init Handler (server:enterWorld)");
+    socket.on("server:enterWorld", function () {
+        utilities.debug(socket, "server:enterWorld");
+        delete character["id"];
+        socket.emit("client:enterWorld", {canEnter: true, character: character});
+        socket.broadcast.emit("client:playerEnteredWorld", character);
     });
 
 };
