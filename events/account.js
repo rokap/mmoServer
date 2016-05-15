@@ -104,7 +104,7 @@ module.exports = function (io, socket, db) {
         var character = {};
 
         utilities.debug(socket, "server:selectCharacter (" + JSON.stringify(data) + ")");
-        db.query("SELECT `id`,  `name`,  `class`,  `level`,  `posX`,  `posY`,  `posZ`,  `rot` FROM characters WHERE id = ? && account = ? ", [data.id, account.account])
+        db.query("SELECT `id`,  `name`,  `class`,  `prefab`,  `gender`,  `level`,  `posX`,  `posY`,  `posZ`,  `rot` FROM characters WHERE id = ? && account = ? ", [data.id, account.account])
             .on('result', function (data) {
                 character = data;
             })
