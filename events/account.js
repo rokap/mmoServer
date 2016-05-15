@@ -9,6 +9,7 @@ module.exports = function (io, socket, db) {
         email: ''
     };
 
+    utilities.debug(socket, "Init Handler (server:register)");
     socket.on("server:register", function (data) {
         utilities.debug(socket, "server:register (" + JSON.stringify(data) + ")");
         var accountExists = false;
@@ -36,6 +37,7 @@ module.exports = function (io, socket, db) {
 
     });
 
+    utilities.debug(socket, "Init Handler (server:login)");
     socket.on("server:login", function (data) {
         utilities.debug(socket, "server:login (" + JSON.stringify(data) + ")");
 
@@ -67,6 +69,7 @@ module.exports = function (io, socket, db) {
 
     });
 
+    utilities.debug(socket, "Init Handler (server:logout)");
     socket.on("server:logout", function () {
         utilities.debug(socket, "server:logout");
         account = {
@@ -79,6 +82,7 @@ module.exports = function (io, socket, db) {
 
     });
 
+    utilities.debug(socket, "Init Handler (server:requestCharacters)");
     socket.on("server:requestCharacters", function () {
 
         var characters = [];
@@ -94,6 +98,7 @@ module.exports = function (io, socket, db) {
 
     });
 
+    utilities.debug(socket, "Init Handler (server:selectCharacter)");
     socket.on("server:selectCharacter", function (data) {
 
         var character = {};
@@ -109,6 +114,7 @@ module.exports = function (io, socket, db) {
 
     });
 
+    utilities.debug(socket, "Init Handler (server:createCharacter)");
     socket.on("server:createCharacter", function (data) {
 
         utilities.debug(socket, "server:createCharacter (" + JSON.stringify(data) + ")");
@@ -138,6 +144,7 @@ module.exports = function (io, socket, db) {
 
     });
 
+    utilities.debug(socket, "Init Handler (server:deleteCharacter)");
     socket.on("server:deleteCharacter", function (data) {
         utilities.debug(socket, "server:deleteCharacter (" + JSON.stringify(data) + ")");
         db.query("DELETE FROM characters where id = '" + data.id + "'");
