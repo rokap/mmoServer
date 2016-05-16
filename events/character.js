@@ -4,6 +4,13 @@ module.exports = function (account, io, socket, db) {
 
     var character = {};
 
+    this.Get = function (field) {
+        if (field !== undefined)
+            return character[field];
+        else
+            return character;
+    };
+
     utilities.debug(socket, "Init Handler (server:requestCharacters)");
     socket.on("server:requestCharacters", function () {
         utilities.debug(socket, "server:requestCharacters (" + account.Get("id") + ")");
