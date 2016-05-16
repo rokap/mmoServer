@@ -4,8 +4,8 @@ var config = {
     db: {
         host: 'localhost',
         user: 'root',
-        password: 'hobbes03',
-        database: 'chat'
+        password: '',
+        database: 'mmoserver'
     }
 };
 
