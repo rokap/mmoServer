@@ -30,5 +30,7 @@ io.on('connection', function (socket) {
         io.emit("client:disconnect", data);
     });
 
-    require('./events/account')(io, socket, db);
+    var account = require('./events/account')(io, socket, db);
+    var character = require('./events/character')(account, io, socket, db);
+
 });
