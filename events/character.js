@@ -6,7 +6,7 @@ module.exports = function (account, io, socket, db) {
 
     utilities.debug(socket, "Character Events");
 
-    this.Get = function (field) {
+    character.Get = function (field) {
         if (field !== undefined)
             return character[field];
         else
@@ -85,6 +85,6 @@ module.exports = function (account, io, socket, db) {
         socket.broadcast.emit("client:playerEnteredWorld", character);
     });
 
-    return this;
+    return character;
 
 };

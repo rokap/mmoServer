@@ -6,7 +6,7 @@ module.exports = function (io, socket, db) {
 
     utilities.debug(socket, "Account Events");
 
-    this.Get = function (field) {
+    account.Get = function (field) {
         if (field !== undefined)
             return account[field];
         else
@@ -78,6 +78,6 @@ module.exports = function (io, socket, db) {
 
     });
 
-    return this;
+    return account;
 
 };
