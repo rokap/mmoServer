@@ -32,6 +32,9 @@ io.on('connection', function (socket) {
         io.emit("client:disconnect", data);
     });
 
+    socket.join("general");
+    socket.join("local");
+
     // Init Other Handlers
     var account = require('./events/account')(io, socket, db);
     var character = require('./events/character')(account, io, socket, db);
