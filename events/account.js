@@ -4,6 +4,8 @@ module.exports = function (io, socket, db) {
 
     var account = {};
 
+    utilities.debug(socket, "Account Events");
+
     this.Get = function (field) {
         if (field !== undefined)
             return account[field];
@@ -11,7 +13,7 @@ module.exports = function (io, socket, db) {
             return account;
     };
 
-    utilities.debug(socket, "Init Handler (server:register)");
+    utilities.debug(socket, " - Init Handler (server:register)");
     socket.on("server:register", function (data) {
         utilities.debug(socket, "server:register (" + JSON.stringify(data) + ")");
         var accountExists = false;
@@ -39,7 +41,7 @@ module.exports = function (io, socket, db) {
 
     });
 
-    utilities.debug(socket, "Init Handler (server:login)");
+    utilities.debug(socket, " - Init Handler (server:login)");
     socket.on("server:login", function (data) {
         utilities.debug(socket, "server:login (" + JSON.stringify(data) + ")");
 
@@ -68,7 +70,7 @@ module.exports = function (io, socket, db) {
 
     });
 
-    utilities.debug(socket, "Init Handler (server:logout)");
+    utilities.debug(socket, " - Init Handler (server:logout)");
     socket.on("server:logout", function () {
         utilities.debug(socket, "server:logout");
         account = {};

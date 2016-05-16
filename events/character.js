@@ -4,6 +4,8 @@ module.exports = function (account, io, socket, db) {
 
     var character = {};
 
+    utilities.debug(socket, "Character Events");
+
     this.Get = function (field) {
         if (field !== undefined)
             return character[field];
@@ -11,7 +13,7 @@ module.exports = function (account, io, socket, db) {
             return character;
     };
 
-    utilities.debug(socket, "Init Handler (server:requestCharacters)");
+    utilities.debug(socket, " - Init Handler (server:requestCharacters)");
     socket.on("server:requestCharacters", function () {
         utilities.debug(socket, "server:requestCharacters (" + account.Get("id") + ")");
         var characters = [];
@@ -26,7 +28,7 @@ module.exports = function (account, io, socket, db) {
 
     });
 
-    utilities.debug(socket, "Init Handler (server:selectCharacter)");
+    utilities.debug(socket, " - Init Handler (server:selectCharacter)");
     socket.on("server:selectCharacter", function (data) {
 
 
@@ -41,7 +43,7 @@ module.exports = function (account, io, socket, db) {
 
     });
 
-    utilities.debug(socket, "Init Handler (server:createCharacter)");
+    utilities.debug(socket, " - Init Handler (server:createCharacter)");
     socket.on("server:createCharacter", function (data) {
 
         utilities.debug(socket, "server:createCharacter (" + JSON.stringify(data) + ")");
@@ -69,14 +71,14 @@ module.exports = function (account, io, socket, db) {
             });
     });
 
-    utilities.debug(socket, "Init Handler (server:deleteCharacter)");
+    utilities.debug(socket, " - Init Handler (server:deleteCharacter)");
     socket.on("server:deleteCharacter", function (data) {
         utilities.debug(socket, "server:deleteCharacter (" + JSON.stringify(data) + ")");
         db.query("DELETE FROM characters where id = '" + data.id + "'");
         socket.emit("client:deleteCharacter", {deleted: true})
     });
 
-    utilities.debug(socket, "Init Handler (server:enterWorld)");
+    utilities.debug(socket, " - Init Handler (server:enterWorld)");
     socket.on("server:enterWorld", function () {
         utilities.debug(socket, "server:enterWorld");
         socket.emit("client:enterWorld", {canEnter: true, character: character});
