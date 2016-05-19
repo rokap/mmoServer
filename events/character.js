@@ -71,6 +71,23 @@ module.exports = function (account, io, socket, db) {
             });
     });
 
+
+    utilities.debug(socket, " - Init Handler (server:requestClassesRaces)");
+    socket.on("server:requestClassesRaces", function () {
+        utilities.debug(socket, "server:requestClassesRaces ()");
+        var classes, races;
+        db.query("SELECT name,icon FROM classes").on('result', function (dbData) {
+            classes = dbData;
+        }).on('end', function () {
+            db.query("SELECT name,icon FROM races").on('result', function (dbData) {
+                races = dbData;
+            }).on('end', function () {
+                socket.emit('client:requestClassesRaces', {classes: classes, races: races});
+            });
+        });
+    });
+
+
     utilities.debug(socket, " - Init Handler (server:deleteCharacter)");
     socket.on("server:deleteCharacter", function (data) {
         utilities.debug(socket, "server:deleteCharacter (" + JSON.stringify(data) + ")");
