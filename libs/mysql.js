@@ -39,7 +39,7 @@ module.exports = function (config) {
                         console.log("Added " + sqlUpdate + " to db");
 
                         var sql = fs.readFileSync("./sql/" + file).toString();
-                        db.query(sql);
+                        db.query(sql.toString('ascii'));
                         db.query("INSERT INTO sqlupdates (file) VALUES (?)", sqlUpdate);
                     }
                 })
