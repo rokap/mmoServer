@@ -103,7 +103,7 @@ module.exports = function (account, io, socket, db) {
     utilities.debug(socket, " - Init Handler (server:moveCharacter)");
     socket.on("server:moveCharacter", function (posX, posY, posZ, rot) {
 
-        utilities(socket, posX + ", " + posY + ", " + posZ + ", " + rot);
+        utilities.debug(socket, posX + ", " + posY + ", " + posZ + ", " + rot);
 
         character.posX = posX;
         character.posY = posY;
