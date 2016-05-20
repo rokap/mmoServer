@@ -103,12 +103,14 @@ module.exports = function (account, io, socket, db) {
     utilities.debug(socket, " - Init Handler (server:moveCharacter)");
     socket.on("server:moveCharacter", function (posX, posY, posZ, rot) {
 
+        utilities(socket, posX + ", " + posY + ", " + posZ + ", " + rot);
+
         character.posX = posX;
         character.posY = posY;
         character.posZ = posZ;
         character.rot = rot;
 
-        db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=?, WHERE id=?  ", [posX, posY, posZ, rot, character.id]);
+        db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=? WHERE id=?  ", [posX, posY, posZ, rot, character.id]);
         socket.broadcast.emit("client:otherCharacterMoved", character);
 
         }
