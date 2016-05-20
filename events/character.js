@@ -101,16 +101,16 @@ module.exports = function (account, io, socket, db) {
     });
 
     utilities.debug(socket, " - Init Handler (server:moveCharacter)");
-    socket.on("server:moveCharacter", function (posX, posY, posZ, rot) {
+    socket.on("server:moveCharacter", function (data) {
 
-        utilities.debug(socket, posX + ", " + posY + ", " + posZ + ", " + rot);
+        utilities.debug(socket, JSON.stringify(data));
 
-        character.posX = posX;
-        character.posY = posY;
-        character.posZ = posZ;
-        character.rot = rot;
+        character.posX = data.posX;
+        character.posY = data.posY;
+        character.posZ = data.posZ;
+        character.rot = data.rot;
 
-        db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=? WHERE id=?  ", [posX, posY, posZ, rot, character.id]);
+        db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=? WHERE id=?  ", [data.posX, data.posY, data.posZ, data.rot, character.id]);
         socket.broadcast.emit("client:otherCharacterMoved", character);
 
         }
