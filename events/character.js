@@ -108,24 +108,10 @@ module.exports = function (account, io, socket, db) {
         character.posZ = posZ;
         character.rot = rot;
 
-        // every 5 seconds, update database
-        function updateDatabase() {
-            setTimeout(function () {
-                db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=?, WHERE id=?  ", posX, posY, posZ, rot, character.id);
-            }, 5000);
-            updateDatabase();
-        }
-
-        function sendPosToConnectedClients() {
-            setTimeout(function () {
-                socket.broadcast.emit("client:otherCharacterMoved", character);
-            }, 100);
-            sendPosToConnectedClients();
+        db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=?, WHERE id=?  ", posX, posY, posZ, rot, character.id);
+        socket.broadcast.emit("client:otherCharacterMoved", character);
 
         }
-    });
-
-
+    );
     return character;
-
 };
