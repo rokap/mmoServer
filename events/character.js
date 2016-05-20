@@ -71,7 +71,6 @@ module.exports = function (account, io, socket, db) {
             });
     });
 
-
     utilities.debug(socket, " - Init Handler (server:requestClassesRaces)");
     socket.on("server:requestClassesRaces", function () {
         utilities.debug(socket, "server:requestClassesRaces ()");
@@ -87,7 +86,6 @@ module.exports = function (account, io, socket, db) {
         });
     });
 
-
     utilities.debug(socket, " - Init Handler (server:deleteCharacter)");
     socket.on("server:deleteCharacter", function (data) {
         utilities.debug(socket, "server:deleteCharacter (" + JSON.stringify(data) + ")");
@@ -101,6 +99,32 @@ module.exports = function (account, io, socket, db) {
         socket.emit("client:enterWorld", {canEnter: true, character: character});
         socket.broadcast.emit("client:playerEnteredWorld", character);
     });
+
+    utilities.debug(socket, " - Init Handler (server:moveCharacter)");
+    socket.on("server:moveCharacter", function (posX, posY, posZ, rot) {
+
+        character.posX = posX;
+        character.posY = posY;
+        character.posZ = posZ;
+        character.rot = rot;
+
+        // every 5 seconds, update database
+        function updateDatabase() {
+            setTimeout(function () {
+                db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=?, WHERE id=?  ", posX, posY, posZ, rot, character.id);
+            }, 5000);
+            updateDatabase();
+        }
+
+        function sendPosToConnectedClients() {
+            setTimeout(function () {
+                socket.broadcast.emit("client:otherCharacterMoved", character);
+            }, 100);
+            sendPosToConnectedClients();
+
+        }
+    });
+
 
     return character;
 
