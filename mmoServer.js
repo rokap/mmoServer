@@ -47,3 +47,8 @@ io.on('connection', function (socket) {
     var quest = require('./events/quest')(io, socket, db);
 
 });
+
+setInterval(function () {
+    utilities.debug(socket, "World Tick");
+    io.emit('world:tick');
+}, 6000);
