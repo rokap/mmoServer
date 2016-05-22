@@ -103,9 +103,7 @@ module.exports = function (account, io, socket, db, characters) {
     });
 
     utilities.debug(socket, " - Init Handler (server:moveCharacter)");
-    socket.on("server:moveCharacter", function (data) {
-
-        utilities.debug(socket, JSON.stringify(data));
+    socket.on("server:moveCharacter", function (data) {      
 
         character.posX = data.posX;
         character.posY = data.posY;
@@ -120,8 +118,7 @@ module.exports = function (account, io, socket, db, characters) {
             rot: data.rot
         };
 
-        db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=? WHERE id=?  ", [data.posX, data.posY, data.posZ, data.rot, character.id]);
-        socket.broadcast.emit("client:otherCharacterMoved", netChar);
+        db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=? WHERE id=?  ", [data.posX, data.posY, data.posZ, data.rot, character.id]);        
 
     });
     return character;

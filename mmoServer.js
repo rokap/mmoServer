@@ -69,6 +69,14 @@ function findByNetId(sid) {
 
 setInterval(function () {
     utilities.debug("Server", "World Tick");
-    utilities.debug("Server", JSON.stringify(characters));
     io.emit('world:tick');
-}, 6000);
+}, 5000);
+
+setInterval(function () {
+    utilities.debug("Server", "Movement Tick");
+    for (var i = 0; i < characters.length; i++) {
+        if (characters[i].netID != socket.id) {
+            socket.broadcast.to(characters[i].netID).emit('world:movementTick');
+        }
+    }
+}, 1000);
