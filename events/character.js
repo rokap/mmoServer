@@ -113,10 +113,10 @@ module.exports = function (account, io, socket, db, characters) {
 
         var netChar = {
             netID: socket.id,
-            posX: posX,
-            posY: posY,
-            posZ: posZ,
-            rot: rot
+            posX: data.posX,
+            posY: data.posY,
+            posZ: data.posZ,
+            rot: data.rot
         };
 
         db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=? WHERE id=?  ", [data.posX, data.posY, data.posZ, data.rot, character.id]);
