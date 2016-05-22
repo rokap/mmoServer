@@ -96,7 +96,7 @@ module.exports = function (account, io, socket, db, characters) {
     utilities.debug(socket, " - Init Handler (server:enterWorld)");
     socket.on("server:enterWorld", function () {
         utilities.debug(socket, "server:enterWorld");
-        characters.push(character.Get());
+        characters.push(character);
         socket.emit("client:enterWorld", {canEnter: true, character: character});
         socket.broadcast.emit("client:playerEnteredWorld", character);
     });
