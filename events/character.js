@@ -1,6 +1,6 @@
 var utilities = require('../libs/utilities');
 
-module.exports = function (account, io, socket, db) {
+module.exports = function (account, io, socket, db, characters) {
 
     var character = {};
 
@@ -96,6 +96,7 @@ module.exports = function (account, io, socket, db) {
     utilities.debug(socket, " - Init Handler (server:enterWorld)");
     socket.on("server:enterWorld", function () {
         utilities.debug(socket, "server:enterWorld");
+        characters.push(character.Get());
         socket.emit("client:enterWorld", {canEnter: true, character: character});
         socket.broadcast.emit("client:playerEnteredWorld", character);
     });
@@ -110,10 +111,17 @@ module.exports = function (account, io, socket, db) {
         character.posZ = data.posZ;
         character.rot = data.rot;
 
-        db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=? WHERE id=?  ", [data.posX, data.posY, data.posZ, data.rot, character.id]);
-        socket.broadcast.emit("client:otherCharacterMoved", character);
+        var netChar = {
+            netID: socket.id,
+            posX: posX,
+            posY: posY,
+            posZ: posZ,
+            rot: rot
+        };
 
-        }
-    );
+        db.query("UPDATE characters SET posX=?,posY=?,posZ=?,rot=? WHERE id=?  ", [data.posX, data.posY, data.posZ, data.rot, character.id]);
+        socket.broadcast.emit("client:otherCharacterMoved", netChar);
+
+    });
     return character;
 };

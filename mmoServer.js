@@ -40,9 +40,8 @@ io.on('connection', function (socket) {
 
     // Init Other Handlers
     var account = require('./events/account')(io, socket, db);
-    var character = require('./events/character')(account, io, socket, db);
+    var character = require('./events/character')(account, io, socket, db, characters);
 
-    characters.push(character.Get());
 
     var chat = require('./events/chat')(character, io, socket, db);
     var world = require('./events/world')(io, socket, db);
