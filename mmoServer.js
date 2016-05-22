@@ -77,10 +77,10 @@ setInterval(function () {
 
     var lastCharacter = {};
     for (var i = 0; i < characters.length; i++) {
-        if (lastCharacter != character[i]) {
+        if (lastCharacter != characters[i]) {
             utilities.debug("Server", "Character Changed, Send update");
             io.to(characters[i].netID).emit('world:movementTick', {characters: characters});
-            lastCharacter = character[i];
+            lastCharacter = characters[i];
         }
     }
 }, 1000);
