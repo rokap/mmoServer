@@ -75,6 +75,6 @@ setInterval(function () {
 setInterval(function () {
     utilities.debug("Server", "Movement Tick");
     for (var i = 0; i < characters.length; i++) {
-        io.to(characters[i].netID).emit('world:movementTick');
+        io.to(characters[i].netID).emit('world:movementTick', {characters: characters});
     }
 }, 1000);
