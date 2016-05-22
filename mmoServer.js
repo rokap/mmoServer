@@ -49,6 +49,6 @@ io.on('connection', function (socket) {
 });
 
 setInterval(function () {
-    utilities.debug(socket, "World Tick");
+    utilities.debug("Server", "World Tick");
     io.emit('world:tick');
 }, 6000);
