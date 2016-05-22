@@ -13,6 +13,7 @@ module.exports = function (io, socket, db) {
         }, 6000);
         world.WorldTick();
     };
-    return this;
+
+    return world;
 
 };
