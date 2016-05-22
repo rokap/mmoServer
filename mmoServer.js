@@ -14,6 +14,9 @@ io.attach(config.port);
 // Init Connection Hanlder
 console.log();
 utilities.debug("Core", "Starting Server *:" + config.port);
+
+var characters = [];
+
 io.on('connection', function (socket) {
 
     var ipaddress = socket.request.connection.remoteAddress;
@@ -38,6 +41,9 @@ io.on('connection', function (socket) {
     // Init Other Handlers
     var account = require('./events/account')(io, socket, db);
     var character = require('./events/character')(account, io, socket, db);
+
+    characters.push(character.Get());
+
     var chat = require('./events/chat')(character, io, socket, db);
     var world = require('./events/world')(io, socket, db);
     var zone = require('./events/zone')(io, socket, db);
@@ -50,5 +56,6 @@ io.on('connection', function (socket) {
 
 setInterval(function () {
     utilities.debug("Server", "World Tick");
+    utilities.debug("Server", JSON.stringify(characters));
     io.emit('world:tick');
 }, 6000);
