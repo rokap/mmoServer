@@ -33,6 +33,11 @@ io.on('connection', function (socket) {
     socket.on("disconnect", function (data) {
         utilities.debug(socket, "Disconnect");
         io.emit("client:disconnect", data);
+        var removeCharacter = findByNetId(socket.id);
+        var index = characters.indexOf(removeCharacter);
+        if (index > -1) {
+            characters.splice(index, 1);
+        }
     });
 
     socket.join("general");
@@ -52,6 +57,15 @@ io.on('connection', function (socket) {
     var quest = require('./events/quest')(io, socket, db);
 
 });
+
+function findByNetId(sid) {
+    for (var i = 0; i < characters.length; i++) {
+        if (characters[i].netID == sid) {
+            return characters[i];
+        }
+    }
+    return null;
+}
 
 setInterval(function () {
     utilities.debug("Server", "World Tick");
