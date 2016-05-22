@@ -9,6 +9,7 @@ module.exports = function (io, socket, db) {
 
     world.WorldTick = function () {
         setTimeout(function () {
+            utilities.debug(socket, "World Tick");
             io.emit('world:tick');
             world.WorldTick();
         }, 6000);
