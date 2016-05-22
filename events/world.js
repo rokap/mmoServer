@@ -6,8 +6,8 @@ module.exports = function (io, socket, db) {
 
     // world events coming soon
     utilities.debug(socket, "World Events");
-    
-    setTimeout(function () {
+
+    setInterval(function () {
         utilities.debug(socket, "World Tick");
         io.emit('world:tick');
     }, 6000);
