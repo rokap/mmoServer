@@ -74,7 +74,14 @@ setInterval(function () {
 
 setInterval(function () {
     utilities.debug("Server", "Movement Tick");
+
+    var lastCharacter = {};
     for (var i = 0; i < characters.length; i++) {
-        io.to(characters[i].netID).emit('world:movementTick', {characters: characters});
+        if (lastCharacter != character[i]) {
+            utilities.debug("Server", "Character Changed, Send update");
+            io.to(characters[i].netID).emit('world:movementTick', {characters: characters});
+            lastCharacter = character[i];
+        }
     }
 }, 1000);
+
