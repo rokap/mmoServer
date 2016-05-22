@@ -40,6 +40,10 @@ io.on('connection', function (socket) {
     var character = require('./events/character')(account, io, socket, db);
     var chat = require('./events/chat')(character, io, socket, db);
     var world = require('./events/world')(io, socket, db);
+
+
+    world.WorldTick();
+
     var zone = require('./events/zone')(io, socket, db);
     var inventory = require('./events/inventory')(io, socket, db);
     var trade = require('./events/trade')(io, socket, db);

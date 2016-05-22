@@ -7,14 +7,12 @@ module.exports = function (io, socket, db) {
     // world events coming soon
     utilities.debug(socket, "World Events");
 
-    var WorldTick = function () {
+    world.WorldTick = function () {
         setTimeout(function () {
             io.emit('world:tick');
         }, 6000);
-        WorldTick();
+        world.WorldTick();
     };
-
-    WorldTick();
     return this;
 
 };
