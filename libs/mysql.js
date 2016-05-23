@@ -1,5 +1,15 @@
-var utilities = require('../libs/utilities');
-var mysql = require('mysql');
+var util = require('util'),
+    mysql = require('mysql'),
+    colors = require('colors');
+
+// set theme
+colors.setTheme({
+    info: 'grey',
+    success: 'green',
+    warn: 'yellow',
+    debug: 'cyan',
+    error: 'red'
+});
 
 module.exports = function (config) {
     var db = mysql.createConnection({
@@ -8,10 +18,13 @@ module.exports = function (config) {
         password: config.db.password,
         database: config.db.database
     });
+    var connected = false;
+    util.log(("Using Mysql (" + config.db.database + ")").success);
     db.connect(function (err) {
-        utilities.debug("Core", "Using Mysql (" + config.db.database + ")");
+        connected = true;
         if (err) console.log(err);
     });
+
 
     // CREATE if missing sqlupdates
     db.query('CREATE TABLE IF NOT EXISTS `sqlupdates` (' +

@@ -1,83 +1,103 @@
-var utilities = require('../libs/utilities');
+var util = require("util");
+module.exports = function (server, io, db) {
 
-module.exports = function (io, socket, db) {
+    /**
+     * onLogin Handler
+     * @param data
+     * @param socket
+     */
+    this.onLogin = function (data, socket) {
 
-    var account = {};
+        var netID = socket.id;
 
-    utilities.debug(socket, "Account Events");
-
-    account.Get = function (field) {
-        if (field !== undefined)
-            return account[field];
-        else
-            return account;
-    };
-
-    utilities.debug(socket, " - Init Handler (server:register)");
-    socket.on("server:register", function (data) {
-        utilities.debug(socket, "server:register (" + JSON.stringify(data) + ")");
-        var accountExists = false;
-        // Check if account exists already
-        db.query("SELECT * FROM accounts where username = '" + data.username + "'")
-            .on('result', function (data) {
-                accountExists = true;
-            })
-            .on('end', function () {
-                if (accountExists) {
-                    // Already Exists
-                    utilities.debug(socket, "Account " + data.username + " Already Exists");
-                    socket.emit('client:register', {accountExists: accountExists})
-                } else {
-                    // Available, Create account
-                    utilities.debug(socket, "Account " + data.username + " is available, Creating");
-                    db.query(
-                        "INSERT INTO accounts (username,password,firstname,lastname,active) VALUES (?,?,?,?,true)",
-                        [data.username, data.password, data.firstname, data.lastname]
-                    );
-                    socket.emit('client:register', {accountExists: accountExists})
-                }
-            });
-
-
-    });
-
-    utilities.debug(socket, " - Init Handler (server:login)");
-    socket.on("server:login", function (data) {
-        utilities.debug(socket, "server:login (" + JSON.stringify(data) + ")");
+        util.log((netID + " - in = " + JSON.stringify(data)).debug);
 
         var loggedIn = false;
 
-        db.query("SELECT * FROM accounts where username = '" + data.user + "' && password = '" + data.pass + "' && active = 1")
-            .on('result', function (data) {
-                loggedIn = true;
-                account = data;
-            })
-            .on('end', function () {
-                // Only emit notes after query has been completed
-                if (loggedIn) {
-                    utilities.debug(socket, account.username + " - Login Success (" + account.id + ")");
-                    socket.emit('client:login', {loggedIn: loggedIn, account: account, error: ''})
-                } else {
-                    loggedIn = false;
-                    utilities.debug(socket, account.username + " - Username/Password Incorrect");
-                    socket.emit('client:login', {
-                        loggedIn: loggedIn,
-                        account: account,
-                        error: 'Username/Password Incorrect'
-                    })
-                }
-            });
+        // Internal to this file
+        var account = {
+            id: 0,
+            username: "",
+            firstname: "",
+            lastname: "",
+            netID: netID
+        };
 
-    });
+        var status = 0;
+        var response = {};
+        if (server.AccountAlreadyLoggedIn(data.user)) {
+            status = 3;
+            response = {
+                loggedIn: loggedIn,
+                status: status
+            };
+            util.log((netID + " - out = " + JSON.stringify(response)).error);
+            socket.emit('account:onLogin', response);
+        }
+        else {
+            db.query("SELECT id,username,firstname,lastname,active FROM accounts where username = '" + data.user + "' && password = '" + data.pass + "'")
+                .on('result', function (data) {
+                    util.log((netID + " - mysql = " + JSON.stringify(data)).info);
+                    if (data.active) {
+                        loggedIn = true;
+                        account = data;
+                        server.accounts.push(account);
+                        delete account.id;
+                        delete account.active;
+                        account.netID = netID;
+                        status = 0; // No Error
+                    } else {
+                        loggedIn = false;
+                        status = 1; // Inactive Account
+                    }
+                })
+                .on('end', function () {
+                    if (loggedIn) {
+                        response = {
+                            loggedIn: loggedIn,
+                            status: status,
+                            account: account
+                        };
+                        util.log((netID + " - out = " + JSON.stringify(response)).success);
+                        io.to('admin').emit('account:playerLogin', response);
+                        io.emit('account:onLogin', response);
+                        util.log((netID + " - Logged In").success);
+                    } else {
+                        if (status == 0) status = 2; // User Pass Incorrect
+                        loggedIn = false;
+                        response = {
+                            loggedIn: loggedIn,
+                            status: status
+                        };
+                        util.log((netID + " - out = " + JSON.stringify(response)).error);
+                        socket.emit('account:onLogin', response);
+                    }
+                });
+        }
 
-    utilities.debug(socket, " - Init Handler (server:logout)");
-    socket.on("server:logout", function () {
-        utilities.debug(socket, "server:logout");
-        account = {};
-        socket.emit("client:logout", account);
 
-    });
+    };
 
-    return account;
+    /**
+     * onLogout Hanlder
+     * @param data
+     * @param socket
+     */
+    this.onLogout = function (data, socket) {
+        var netID = socket.id;
+        var accountToRemove = server.FindAccountByNetID(netID);
+        var index = server.accounts.indexOf(accountToRemove);
+        if (index > -1) {
+            io.to('admin').emit('account:playerLogout', accountToRemove.username);
+            socket.emit('account:onLogout');
+            util.log((netID + " - Logged Out").success);
+            server.accounts.splice(index, 1);
+        }
+    };
 
-};
+    this.onRequestCharacters = function (data, socket) {
+        util.log("Not Yet Implemented".warn)
+    };
+    return this;
+}
+;
