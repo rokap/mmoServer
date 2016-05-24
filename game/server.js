@@ -74,8 +74,10 @@ var Server = function () {
                 util.log((netID + " - Missing event : ./events/" + res[0] + ":" + res[1] + " (" + exc + ")").error);
             }
 
-        } else
-            util.log((netID + " - Missing Handler : " + res[0]).error);
+        } else {
+            console.log(("\n--- " + res[0] + ":" + res[1] + " Batch ---").info);
+            util.log((netID + " - Missing File : ./events/" + res[0] + ".js").error);
+        }
 
     };
 
@@ -84,9 +86,9 @@ var Server = function () {
         if (port === undefined)
             port = config.port;
 
-        var app = require('express')(),                         // App
-            http = require('http').Server(app),                 // HTTP Server
-            io = require('socket.io')(http);               // I/O
+        var app = require('express')(),         // App
+            http = require('http').Server(app), // HTTP Server
+            io = require('socket.io')(http);    // I/O
 
         app.get('/', function (req, res) {
             res.sendfile('web/index.html');
@@ -123,7 +125,7 @@ var Server = function () {
             })
         });
         util.log("Init Account Handlers".success);
-        router.on("account:*", function (socket, args, next) {
+        router.on("*", function (socket, args, next) {
             var name = args.shift(), msg = args.shift();
             self.onMessage(name, msg, socket, io, self._server, db);
             next();
