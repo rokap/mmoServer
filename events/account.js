@@ -1,4 +1,12 @@
 var util = require("util");
+
+/**
+ * Account Events, Called Dynamically, On Demand
+ * @param server
+ * @param io
+ * @param db
+ * @returns {module}
+ */
 module.exports = function (server, io, db) {
 
     /**
@@ -79,7 +87,7 @@ module.exports = function (server, io, db) {
     };
 
     /**
-     * onLogout Hanlder
+     * onLogout Handler
      * @param data
      * @param socket
      */
@@ -95,9 +103,59 @@ module.exports = function (server, io, db) {
         }
     };
 
+    /**
+     * onRequestCharacters Handler
+     * @param data
+     * @param socket
+     */
     this.onRequestCharacters = function (data, socket) {
         util.log("Not Yet Implemented".warn)
     };
+
+    /**
+     * onSelectCharacter Handler
+     * @param data
+     * @param socket
+     */
+    this.onSelectCharacter = function (data, socket) {
+        util.log("Not Yet Implemented".warn)
+    };
+
+    /**
+     * onCreateCharacter Handler
+     * @param data
+     * @param socket
+     */
+    this.onCreateCharacter = function (data, socket) {
+        util.log("Not Yet Implemented".warn)
+    };
+
+    /**
+     * onDeleteCharacter Handler
+     * @param data
+     * @param socket
+     */
+    this.onDeleteCharacter = function (data, socket) {
+        util.log("Not Yet Implemented".warn)
+    };
+
+    /**
+     * onRequestClassesRaces Handler
+     * @param data
+     * @param socket
+     */
+    this.onRequestClassesRaces = function (data, socket) {
+        util.log("Not Yet Implemented".warn)
+    };
+
+    /**
+     * onEnterWorld Handler
+     * @param data
+     * @param socket
+     */
+    this.onEnterWorld = function (data, socket) {
+        util.log("Not Yet Implemented".warn)
+    };
+    
     return this;
-}
-;
+};
