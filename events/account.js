@@ -126,18 +126,6 @@ module.exports = function (server, io, db) {
             });
     };
 
-    this.onSelectCharacter = function (data, socket) {
-        util.log("Not Implemented Yet".warn);
-    };
-
-    this.onDeleteCharacter = function (data, socket) {
-        util.log("Not Implemented Yet".warn);
-    };
-
-    this.onEnterWorld = function (data, socket) {
-        util.log("Not Implemented Yet".warn);
-    };
-
     /**
      * onSelectCharacter Handler
      * @param data
