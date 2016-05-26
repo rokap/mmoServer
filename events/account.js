@@ -50,8 +50,6 @@ module.exports = function (server, io, db) {
                         loggedIn = true;
                         account = data;
                         server.accounts.push(account);
-                        delete account.id;
-                        delete account.active;
                         account.netID = netID;
                         status = 0; // No Error
                     } else {
@@ -109,7 +107,35 @@ module.exports = function (server, io, db) {
      * @param socket
      */
     this.onRequestCharacters = function (data, socket) {
-        util.log("Not Yet Implemented".warn)
+        var netID = socket.id;
+        if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
+        var characters = [];
+
+        var account = server.FindAccountByNetID(netID);
+
+        var response = {};
+        db.query("SELECT `id`,  `name`,  `class`,  `level` FROM characters WHERE account = ? ", account.id)
+            .on('result', function (data) {
+                util.log((netID + " - mysql = " + JSON.stringify(data)).info);
+                characters.push(data);
+            })
+            .on('end', function () {
+                response = {characters: characters};
+                util.log((netID + " - out = " + JSON.stringify(response)).success);
+                socket.emit("account:onRequestCharacters", response);
+            });
+    };
+
+    this.onSelectCharacter = function (data, socket) {
+        util.log("Not Implemented Yet".warn);
+    };
+
+    this.onDeleteCharacter = function (data, socket) {
+        util.log("Not Implemented Yet".warn);
+    };
+
+    this.onEnterWorld = function (data, socket) {
+        util.log("Not Implemented Yet".warn);
     };
 
     /**
