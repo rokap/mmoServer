@@ -238,5 +238,24 @@ module.exports = function (server, io, db) {
         server.TmpCharacterRemove(netID);
     };
 
+    this.onGetCharactersConnected = function (data, socket) {
+
+        var netID = socket.id;
+        if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
+        var account = server.Account(netID);
+        var characters = {};
+
+        for (var otherNetID in self._server.characters) {
+            if (self._server.characters[netID] != netID) {
+                characters[netID] = self._server.characters[netID];
+            }
+        }
+
+        var response = {characters: characters};
+        util.log((netID + " - out = " + JSON.stringify(response)).success);
+        server.Send(netID, 'account:onGetCharactersConnected', response);
+
+    };
+
     return this;
 };
