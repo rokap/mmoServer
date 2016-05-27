@@ -8,6 +8,10 @@ var Server = function () {
         fileExists = require('file-exists'),
         colors = require('colors');
 
+    var app = require('express')(),         // App
+        http = require('http').Server(app), // HTTP Server
+        io = require('socket.io')(http);    // I/O
+
     // set theme
     colors.setTheme({
         info: 'grey',
@@ -74,8 +78,8 @@ var Server = function () {
          * @constructor
          */
         AccountLoggedIn: function (username) {
-            for (var i = 0; i < this.accounts.length; i++) {
-                if (this.accounts[i].username == username) {
+            for (var netID in self._server.accounts) {
+                if (self._server.accounts[netID].username == username) {
                     return true;
                 }
             }
@@ -126,8 +130,8 @@ var Server = function () {
          * @constructor
          */
         CharacterLoggedIn: function (name) {
-            for (var i = 0; i < this.characters.length; i++) {
-                if (this.characters[i].name == name) {
+            for (var netID in self._server.characters) {
+                if (self._server.characters[netID].name == name) {
                     return true;
                 }
             }
@@ -207,6 +211,25 @@ var Server = function () {
          */
         ClassAdd: function (id, _class) {
             self._server.classes[id] = _class;
+        },
+
+        /**
+         * Send Packet
+         * @param netID
+         * @param cmd
+         * @param data
+         * @constructor
+         */
+        Send: function (netID, cmd, data) {
+            io.to(netID).emit(cmd, data);
+        },
+        SendToOtherCharacters: function (netID, cmd, data) {
+            for (var otherNetID in self._server.characters) {
+                if (self._server.characters[netID] != netID) {
+                    util.log((otherNetID + " - out = " + JSON.stringify(data)).success);
+                    io.to(otherNetID).emit(cmd, data);
+                }
+            }
         }
 
     };
@@ -247,10 +270,6 @@ var Server = function () {
         if (port === undefined)
             port = config.port;
 
-        var app = require('express')(),         // App
-            http = require('http').Server(app), // HTTP Server
-            io = require('socket.io')(http);    // I/O
-
         app.get('/', function (req, res) {
             res.sendfile('web/index.html');
         });
@@ -269,10 +288,6 @@ var Server = function () {
                 socket.emit('account:getOnline', self._server.accounts);
             });
 
-            socket.on('joinChannel', function (room) {
-                socket.join(room);
-            });
-
             console.log("\n--- connection Batch ---".info);
             util.log((netID + " - Connected").success);
 
@@ -288,13 +303,7 @@ var Server = function () {
             });
         });
 
-
-        router.on("account:*", function (socket, args, next) {
-            var name = args.shift(), msg = args.shift();
-            self.onMessage(name, msg, socket, io, self._server, db);
-            next();
-        });
-        router.on("character:*", function (socket, args, next) {
+        router.on("*", function (socket, args, next) {
             var name = args.shift(), msg = args.shift();
             self.onMessage(name, msg, socket, io, self._server, db);
             next();

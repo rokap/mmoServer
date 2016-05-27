@@ -40,7 +40,7 @@ module.exports = function (server, io, db) {
                 status: status
             };
             util.log((netID + " - out = " + JSON.stringify(response)).error);
-            socket.emit('account:onLogin', response);
+            server.Send(netID, 'account:onLogin', response);
         }
         else {
             db.query("SELECT id,username,firstname,lastname,active FROM accounts where username = '" + data.user + "' && password = '" + data.pass + "'")
@@ -64,7 +64,7 @@ module.exports = function (server, io, db) {
                         };
                         util.log((netID + " - out = " + JSON.stringify(response)).success);
                         io.to('admin').emit('account:playerLogin', response);
-                        io.emit('account:onLogin', response);
+                        server.Send(netID, 'account:onLogin', response);
                         util.log((netID + " - Logged In").success);
                     } else {
                         if (status == 0) status = 2; // User Pass Incorrect
@@ -74,7 +74,7 @@ module.exports = function (server, io, db) {
                             status: status
                         };
                         util.log((netID + " - out = " + JSON.stringify(response)).error);
-                        socket.emit('account:onLogin', response);
+                        server.Send(netID, 'account:onLogin', response);
                     }
                 });
         }
@@ -113,7 +113,7 @@ module.exports = function (server, io, db) {
             .on('end', function () {
                 response = {characters: characters};
                 util.log((netID + " - out = " + JSON.stringify(response)).success);
-                socket.emit("account:onRequestCharacters", response);
+                server.Send(netID, 'account:onRequestCharacters', response);
             });
     };
 
@@ -136,7 +136,7 @@ module.exports = function (server, io, db) {
             })
             .on('end', function () {
                 util.log((netID + " - out = " + JSON.stringify(response)).success);
-                socket.emit("account:onSelectCharacter", response);
+                server.Send(netID, 'account:onSelectCharacter', response);
             });
     };
 
@@ -172,7 +172,7 @@ module.exports = function (server, io, db) {
                 response = {characterExists: createCharacter};
 
                 util.log((netID + " - out = " + JSON.stringify(response)).success);
-                socket.emit('account:onCreateCharacter', response);
+                server.Send(netID, 'account:onCreateCharacter', response);
 
             });
 
@@ -194,7 +194,7 @@ module.exports = function (server, io, db) {
         db.query("DELETE FROM characters where id = '" + data.id + "' && account = " + account.id).on("result", function () {
             server.TmpCharacterRemove(netID);
             util.log((netID + " - out = " + JSON.stringify(response)).success);
-            socket.emit("account:onDeleteCharacter", response)
+            server.Send(netID, 'account:onDeleteCharacter', response);
         });
     };
 
@@ -211,7 +211,7 @@ module.exports = function (server, io, db) {
         var response = {classes: server.classes, races: server.races};
 
         util.log((netID + " - out = " + JSON.stringify(response)).success);
-        socket.emit('account:onRequestClassesRaces', response);
+        server.Send(netID, 'account:onRequestClassesRaces', response);
     };
 
     /**
@@ -229,14 +229,11 @@ module.exports = function (server, io, db) {
 
         response = {isMine: true, character: tmpCharacter};
         util.log((netID + " - out = " + JSON.stringify(response)).success);
-        socket.emit("account:onEnterWorld", response);
+        server.Send(netID, 'account:onEnterWorld', response);
 
         response = {isMine: false, character: tmpCharacter};
+        server.SendToOtherCharacters(netID, 'account:onEnterWorld', response);
 
-        for (var otherNetID in server.characters) {
-            util.log((otherNetID + " - out = " + JSON.stringify(response)).success);
-            io.to(otherNetID).emit("account:onEnterWorld", response);
-        }
         server.CharacterAdd(netID, tmpCharacter);
         server.TmpCharacterRemove(netID);
     };
