@@ -17,29 +17,63 @@ var Server = function () {
         error: 'red'
     });
 
+
     var self = this;
 
     // Internal
     this._server = {
-        accounts: [],
-        characters: [],
+
+        races: {},
+        classes: {},
+        accounts: {},
+        characters: {},
+        tmpCharacters: {},
         config: config,
 
-        FindAccountByNetID: function (netID) {
-            for (var i = 0; i < this.accounts.length; i++) {
-                if (this.accounts[i].netID == netID) {
-                    return this.accounts[i];
-                }
-            }
+        /**
+         * Account
+         * @param netID
+         * @returns {* | boolean}
+         * @constructor
+         */
+        Account: function (netID) {
+            if (self._server.accounts[netID] !== undefined)
+                return self._server.accounts[netID];
+            else
+                return false
         },
-        FindAccountByUsername: function (username) {
-            for (var i = 0; i < this.accounts.length; i++) {
-                if (this.accounts[i].username == username) {
-                    return this.accounts[i];
-                }
-            }
+
+        /**
+         * AccountAdd
+         * @param netID
+         * @param account
+         * @constructor
+         */
+        AccountAdd: function (netID, account) {
+            self._server.accounts[netID] = account;
         },
-        AccountAlreadyLoggedIn: function (username) {
+
+        /**
+         * AccountRemove
+         * @param netID
+         * @returns {boolean}
+         * @constructor
+         */
+        AccountRemove: function (netID) {
+            if (self._server.accounts[netID] !== undefined) {
+                delete self._server.accounts[netID];
+                return true;
+            }
+            else return false;
+        },
+
+        /**
+         * AccountLoggedIn
+         * @param username
+         * @returns {boolean}
+         * @constructor
+         */
+        AccountLoggedIn: function (username) {
             for (var i = 0; i < this.accounts.length; i++) {
                 if (this.accounts[i].username == username) {
                     return true;
@@ -47,6 +81,133 @@ var Server = function () {
             }
             return false;
         },
+
+        /**
+         * Character
+         * @param netID
+         * @returns {* | boolean}
+         * @constructor
+         */
+        Character: function (netID) {
+            if (self._server.characters[netID] !== undefined)
+                return self._server.characters[netID];
+            else
+                return false
+        },
+
+        /**
+         * CharacterAdd
+         * @param netID
+         * @param account
+         * @constructor
+         */
+        CharacterAdd: function (netID, character) {
+            return self._server.characters[netID] = character;
+        },
+
+        /**
+         * CharacterRemove
+         * @param netID
+         * @returns {boolean}
+         * @constructor
+         */
+        CharacterRemove: function (netID) {
+            if (self._server.characters[netID] !== undefined) {
+                delete self._server.characters[netID];
+                return true;
+            }
+            else return false;
+        },
+
+        /**
+         * CharacterLoggedIn
+         * @param name
+         * @returns {boolean}
+         * @constructor
+         */
+        CharacterLoggedIn: function (name) {
+            for (var i = 0; i < this.characters.length; i++) {
+                if (this.characters[i].name == name) {
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        /**
+         * TmpCharacter
+         * @param netID
+         * @returns {* | boolean}
+         * @constructor
+         */
+        TmpCharacter: function (netID) {
+            if (self._server.tmpCharacters[netID] !== undefined)
+                return self._server.tmpCharacters[netID];
+            else
+                return false
+        },
+
+        /**
+         * TmpCharacterAdd
+         * @param netID
+         * @param account
+         * @constructor
+         */
+        TmpCharacterAdd: function (netID, character) {
+            self._server.tmpCharacters[netID] = character;
+        },
+
+        /**
+         * TmpCharacterRemove
+         * @param netID
+         * @returns {boolean}
+         * @constructor
+         */
+        TmpCharacterRemove: function (netID) {
+            if (self._server.tmpCharacters[netID] !== undefined) {
+                delete self._server.tmpCharacters[netID];
+                return true;
+            }
+            else return false;
+        },
+
+        /**
+         * Races Available
+         * @returns {Server._server.races|{}}
+         * @constructor
+         */
+        Races: function () {
+            return self._server.races;
+        },
+
+        /**
+         * Classes Available
+         * @returns {Server._server.classes|{}}
+         * @constructor
+         */
+        Classes: function () {
+            return self._server.classes;
+        },
+
+        /**
+         * RaceAdd
+         * @param id
+         * @param race
+         * @constructor
+         */
+        RaceAdd: function (id, race) {
+            self._server.races[id] = race;
+        },
+
+        /**
+         * ClassAdd
+         * @param id
+         * @param _class
+         * @constructor
+         */
+        ClassAdd: function (id, _class) {
+            self._server.classes[id] = _class;
+        }
 
     };
 
@@ -93,11 +254,11 @@ var Server = function () {
         app.get('/', function (req, res) {
             res.sendfile('web/index.html');
         });
-
         http.listen(port, function () {
             util.log(("Server Started on Port: " + port).success);
         });
 
+        // Setup Network Listeners
         io.on('connection', function (socket, args, next) {
 
             // Connection / Disconnection
@@ -108,36 +269,58 @@ var Server = function () {
                 socket.emit('account:getOnline', self._server.accounts);
             });
 
+            socket.on('joinChannel', function (room) {
+                socket.join(room);
+            });
+
             console.log("\n--- connection Batch ---".info);
             util.log((netID + " - Connected").success);
 
             socket.on('disconnect', function () {
+
                 console.log("\n--- disconnect Batch ---".info);
                 util.log((netID + " - Disconnected").success);
 
-                var accountToRemove = self._server.FindAccountByNetID(netID);
-                var index = self._server.accounts.indexOf(accountToRemove);
-                if (index > -1) {
-                    io.to('admin').emit('account:playerLogout', accountToRemove.username);
-                    self._server.accounts.splice(index, 1);
-                }
+                self._server.CharacterRemove(netID);
+                self._server.AccountRemove(netID);
+                self._server.TmpCharacterRemove(netID);
 
-            })
+            });
         });
-        util.log("Init Account Handlers".success);
-        router.on("*", function (socket, args, next) {
+
+
+        router.on("account:*", function (socket, args, next) {
+            var name = args.shift(), msg = args.shift();
+            self.onMessage(name, msg, socket, io, self._server, db);
+            next();
+        });
+        router.on("character:*", function (socket, args, next) {
             var name = args.shift(), msg = args.shift();
             self.onMessage(name, msg, socket, io, self._server, db);
             next();
         });
         io.use(router);
 
-        /*
-         setInterval(function() {
-         util.log(JSON.stringify(self._server.accounts));
-         }, 1000);
-         */
+
+        // Load Available Classes
+        db.query("SELECT id,name,icon FROM classes").on('result', function (dbData) {
+            var id = dbData.id;
+            var data = {name: dbData.name, icon: dbData.icon};
+            self._server.ClassAdd(id, data);
+        });
+
+        // Load Available Races
+        db.query("SELECT id,name,icon FROM races").on('result', function (dbData) {
+            var id = dbData.id;
+            var data = {name: dbData.name, icon: dbData.icon};
+            self._server.RaceAdd(id, data);
+        });
+
+        setInterval(function () {
+            //util.log(self._server.tmpCharacters);
+        }, 5000);
 
     };
+
 };
 module.exports = new Server();

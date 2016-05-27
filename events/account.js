@@ -33,7 +33,7 @@ module.exports = function (server, io, db) {
 
         var status = 0;
         var response = {};
-        if (server.AccountAlreadyLoggedIn(data.user)) {
+        if (server.AccountLoggedIn(data.user)) {
             status = 3;
             response = {
                 loggedIn: loggedIn,
@@ -48,9 +48,7 @@ module.exports = function (server, io, db) {
                     util.log((netID + " - mysql = " + JSON.stringify(data)).info);
                     if (data.active) {
                         loggedIn = true;
-                        account = data;
-                        server.accounts.push(account);
-                        account.netID = netID;
+                        server.AccountAdd(netID, data);
                         status = 0; // No Error
                     } else {
                         loggedIn = false;
@@ -62,7 +60,7 @@ module.exports = function (server, io, db) {
                         response = {
                             loggedIn: loggedIn,
                             status: status,
-                            account: account
+                            account: server.Account(netID)
                         };
                         util.log((netID + " - out = " + JSON.stringify(response)).success);
                         io.to('admin').emit('account:playerLogin', response);
@@ -91,14 +89,7 @@ module.exports = function (server, io, db) {
      */
     this.onLogout = function (data, socket) {
         var netID = socket.id;
-        var accountToRemove = server.FindAccountByNetID(netID);
-        var index = server.accounts.indexOf(accountToRemove);
-        if (index > -1) {
-            io.to('admin').emit('account:playerLogout', accountToRemove.username);
-            socket.emit('account:onLogout');
-            util.log((netID + " - Logged Out").success);
-            server.accounts.splice(index, 1);
-        }
+        server.AccountRemove(netID);
     };
 
     /**
@@ -107,13 +98,13 @@ module.exports = function (server, io, db) {
      * @param socket
      */
     this.onRequestCharacters = function (data, socket) {
+
         var netID = socket.id;
         if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
         var characters = [];
-
-        var account = server.FindAccountByNetID(netID);
-
+        var account = server.Account(netID);
         var response = {};
+
         db.query("SELECT `id`,  `name`,  `class`,  `level` FROM characters WHERE account = ? ", account.id)
             .on('result', function (data) {
                 util.log((netID + " - mysql = " + JSON.stringify(data)).info);
@@ -132,7 +123,21 @@ module.exports = function (server, io, db) {
      * @param socket
      */
     this.onSelectCharacter = function (data, socket) {
-        util.log("Not Yet Implemented".warn)
+
+        var netID = socket.id;
+        if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
+        var account = server.Account(netID);
+        var response = {};
+
+        db.query("SELECT `id`, `name`,  `class`,  `race`,  `gender`,  `level`,  `posX`,  `posY`,  `posZ`,  `rot` FROM characters WHERE id = ? && account = ? ", [data.id, account.id])
+            .on('result', function (data) {
+                response = data;
+                server.TmpCharacterAdd(netID, data);
+            })
+            .on('end', function () {
+                util.log((netID + " - out = " + JSON.stringify(response)).success);
+                socket.emit("account:onSelectCharacter", response);
+            });
     };
 
     /**
@@ -141,7 +146,36 @@ module.exports = function (server, io, db) {
      * @param socket
      */
     this.onCreateCharacter = function (data, socket) {
-        util.log("Not Yet Implemented".warn)
+
+        var netID = socket.id;
+        if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
+        var account = server.Account(netID);
+        var response = {};
+
+        var createCharacter = false;
+        // Check if account exists already
+        db.query("SELECT * FROM characters where name = '" + data.name + "' LIMIT 1")
+            .on('result', function (data) {
+                createCharacter = true;
+            })
+            .on('end', function () {
+
+                if (createCharacter) {
+                    // Already Exists
+                    util.log((netID + " Character Name Already Exists " ).error);
+                } else {
+                    // Available, Create account
+                    util.log((netID + " Creating Character (" + [data.name, account.id, data.class, data.race, data.gender, 1] + ")" ).success);
+                    db.query("INSERT INTO characters (name,account,class,race,gender,level) VALUES (?,?,?,?,?,?)", [data.name, account.id, data.class, data.race, data.gender, 1]);
+                }
+
+                response = {characterExists: createCharacter};
+
+                util.log((netID + " - out = " + JSON.stringify(response)).success);
+                socket.emit('account:onCreateCharacter', response);
+
+            });
+
     };
 
     /**
@@ -150,7 +184,18 @@ module.exports = function (server, io, db) {
      * @param socket
      */
     this.onDeleteCharacter = function (data, socket) {
-        util.log("Not Yet Implemented".warn)
+
+        var netID = socket.id;
+        if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
+        var account = server.Account(netID);
+
+        var response = {deleted: true};
+
+        db.query("DELETE FROM characters where id = '" + data.id + "' && account = " + account.id).on("result", function () {
+            server.TmpCharacterRemove(netID);
+            util.log((netID + " - out = " + JSON.stringify(response)).success);
+            socket.emit("account:onDeleteCharacter", response)
+        });
     };
 
     /**
@@ -159,7 +204,14 @@ module.exports = function (server, io, db) {
      * @param socket
      */
     this.onRequestClassesRaces = function (data, socket) {
-        util.log("Not Yet Implemented".warn)
+
+        var netID = socket.id;
+        if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
+        var account = server.Account(netID);
+        var response = {classes: server.classes, races: server.races};
+
+        util.log((netID + " - out = " + JSON.stringify(response)).success);
+        socket.emit('account:onRequestClassesRaces', response);
     };
 
     /**
@@ -168,8 +220,26 @@ module.exports = function (server, io, db) {
      * @param socket
      */
     this.onEnterWorld = function (data, socket) {
-        util.log("Not Yet Implemented".warn)
+
+        var netID = socket.id;
+        if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
+        var account = server.Account(netID);
+        var tmpCharacter = server.TmpCharacter(netID);
+        var response = {};
+
+        response = {isMine: true, character: tmpCharacter};
+        util.log((netID + " - out = " + JSON.stringify(response)).success);
+        socket.emit("account:onEnterWorld", response);
+
+        response = {isMine: false, character: tmpCharacter};
+
+        for (var otherNetID in server.characters) {
+            util.log((otherNetID + " - out = " + JSON.stringify(response)).success);
+            io.to(otherNetID).emit("account:onEnterWorld", response);
+        }
+        server.CharacterAdd(netID, tmpCharacter);
+        server.TmpCharacterRemove(netID);
     };
-    
+
     return this;
 };
