@@ -16,6 +16,7 @@ module.exports = function (server, io, db) {
      */
     this.onMove = function (data, socket) {
         var netID = socket.id;
+        var response = {};
 
         // Get the current Character by Net ID
         var character = server.Character(netID);
@@ -33,7 +34,7 @@ module.exports = function (server, io, db) {
         );
 
         // Send Updates to All Clients Except Sender
-        socket.broadcast.emit("client:otherCharacterMoved", character);
+        server.SendToOtherCharacters(netID, 'character:onMove', character);
     };
 
     return this;
