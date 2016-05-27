@@ -225,7 +225,7 @@ var Server = function () {
         },
         SendToOtherCharacters: function (netID, cmd, data) {
             for (var otherNetID in self._server.characters) {
-                if (self._server.characters[netID] != netID) {
+                if (otherNetID != netID) {
                     util.log((otherNetID + " - out = " + JSON.stringify(data)).success);
                     io.to(otherNetID).emit(cmd, data);
                 }
