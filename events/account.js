@@ -246,7 +246,7 @@ module.exports = function (server, io, db) {
         var characters = {};
 
         for (var otherNetID in server.characters) {
-            if (server.characters[otherNetID] != netID) {
+            if (otherNetID != netID) {
                 characters[otherNetID] = server.characters[otherNetID];
             }
         }
