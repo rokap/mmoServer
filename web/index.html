@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>
+    <h2> Accounts Online:</h2>
+    <ul id="accountsOnline"></ul>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    var socket = io();
+
+    socket.emit("join", "admin");
+
+    socket.on('joinStatus', function (data) {
+
+
+    });
+
+    socket.on('account:getOnline', function (data) {
+        console.log(data);
+        $.each(data, function (index, account) {
+            $('#accountsOnline').append($('<li>').text(account.username).attr('id', account.username));
+        });
+    });
+
+    socket.on('account:playerLogin', function (data) {
+        $('#accountsOnline').append($('<li>').text(data.account.username).attr('id', data.account.username));
+    });
+
+    socket.on('account:playerLogout', function (data) {
+        $('#accountsOnline').each(function () {
+            $("#" + data).remove();
+        })
+    });
+</script>
+</body>
+</html>

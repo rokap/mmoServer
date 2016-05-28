@@ -7,7 +7,6 @@ module.exports = function (character, io, socket, db) {
     // chat events coming soon
     utilities.debug(socket, "Chat Events");
 
-
     utilities.debug(socket, " - Init Handler (server:channelMessage)");
     socket.on("server:channelMessage", function (data) {
         utilities.debug(socket, "server:channelMessage (" + JSON.stringify(data) + ")");
