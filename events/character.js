@@ -20,6 +20,7 @@ module.exports = function (server, io, db) {
 
         // Get the current Character by Net ID
         var character = server.Character(netID);
+        var packet = {};
 
         // Update Server Character
         character.posX = data.posX;
@@ -28,6 +29,14 @@ module.exports = function (server, io, db) {
         character.rot = data.rot;
         character.a = data.a;
 
+        var packet = {
+            posX: data.posX,
+            posY: data.posY,
+            posZ: data.posZ,
+            rot: data.rot,
+            a: data.a
+        };
+
         // Update Database
         db.query(
             "UPDATE characters SET posX=?,posY=?,posZ=?,rot=? WHERE id=?  ",
@@ -35,7 +44,7 @@ module.exports = function (server, io, db) {
         );
 
         // Send Updates to All Clients Except Sender
-        server.SendToOtherCharacters(netID, 'character:onMove', character);
+        server.SendToOtherCharacters(netID, 'character:onMove', packet);
     };
 
     return this;
