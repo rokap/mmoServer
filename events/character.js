@@ -30,11 +30,12 @@ module.exports = function (server, io, db) {
         character.a = data.a;
 
         var packet = {
-            posX: data.posX,
-            posY: data.posY,
-            posZ: data.posZ,
-            rot: data.rot,
-            a: data.a
+            name: character.name,
+            posX: character.posX,
+            posY: character.posY,
+            posZ: character.posZ,
+            rot: character.rot,
+            a: character.a
         };
 
         // Update Database
