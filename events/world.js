@@ -7,6 +7,7 @@ module.exports = function (io, socket, db) {
     // world events coming soon
     utilities.debug(socket, "World Events");
 
-    return this;
+    
+    return world;
 
 };
