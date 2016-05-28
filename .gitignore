@@ -37,3 +37,6 @@ node_modules
 
 # production cnfig
 config.js
+events/world.js
+*.bat
+events/world.js
