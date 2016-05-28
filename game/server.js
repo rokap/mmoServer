@@ -243,7 +243,7 @@ var Server = function () {
         // Setup File;
         if (fileExists('./events/' + res[0] + '.js')) {
 
-            console.log(("\n--- " + res[0] + ":" + res[1] + " Batch ---").info);
+            //console.log(("\n--- " + res[0] + ":" + res[1] + " Batch ---").info);
             // Require Handling File
             var group = require("../events/" + res[0])(server, io, db);
 
@@ -258,7 +258,7 @@ var Server = function () {
             }
 
         } else {
-            console.log(("\n--- " + res[0] + ":" + res[1] + " Batch ---").info);
+            //console.log(("\n--- " + res[0] + ":" + res[1] + " Batch ---").info);
             util.log((netID + " - Missing File : ./events/" + res[0] + ".js").error);
         }
 
