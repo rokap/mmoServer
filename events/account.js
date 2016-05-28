@@ -238,6 +238,11 @@ module.exports = function (server, io, db) {
         server.TmpCharacterRemove(netID);
     };
 
+    /**
+     * onGetCharactersConnected
+     * @param data
+     * @param socket
+     */
     this.onGetCharactersConnected = function (data, socket) {
 
         var netID = socket.id;
