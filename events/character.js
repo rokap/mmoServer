@@ -26,6 +26,7 @@ module.exports = function (server, io, db) {
         character.posY = data.posY;
         character.posZ = data.posZ;
         character.rot = data.rot;
+        character.a = data.a;
 
         // Update Database
         db.query(
