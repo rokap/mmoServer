@@ -48,5 +48,38 @@ module.exports = function (server, io, db) {
         server.SendToOtherCharacters(netID, 'character:onMove', packet);
     };
 
+    /**
+     * onCast Handler
+     * @param data
+     * @param socket
+     */
+    this.onCast = function (data, socket) {
+
+        var netID = socket.id;
+
+        var spell = server.Spell(data.spell_id);
+
+        var packet = {
+            n: spell.name,
+            ct: spell.castTime,
+            sp: spell.sParticles,
+            dp: spell.dParticles
+        };
+
+        // Send first Packet onCast,
+        server.Send(netID, "character:onCast", packet);
+
+        //delay based on castTime on server
+        setTimeout(function () {
+
+            var packet = {
+                e: spell.effects
+            };
+            server.Send(netID, "character:onCastComplete", packet);
+
+        }, spell.castTime);
+
+    };
+
     return this;
 };
