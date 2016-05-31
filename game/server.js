@@ -29,6 +29,7 @@ var Server = function () {
 
         races: {},
         classes: {},
+        spells: {},
         accounts: {},
         characters: {},
         tmpCharacters: {},
@@ -213,6 +214,13 @@ var Server = function () {
             self._server.classes[id] = _class;
         },
 
+        SpellAdd: function (id, spell) {
+            self._server.classes[id] = spell;
+        },
+        SpellEffectAdd: function (id, spell_id, effect) {
+            self._server.classes[spell_id].effects[id] = effect;
+        },
+
         /**
          * Send Packet
          * @param netID
@@ -315,6 +323,8 @@ var Server = function () {
             var id = dbData.id;
             var data = {name: dbData.name, icon: dbData.icon};
             self._server.ClassAdd(id, data);
+        }).on("end", function () {
+            util.log("Loaded Classes".success);
         });
 
         // Load Available Races
@@ -322,6 +332,37 @@ var Server = function () {
             var id = dbData.id;
             var data = {name: dbData.name, icon: dbData.icon};
             self._server.RaceAdd(id, data);
+        }).on("end", function () {
+            util.log("Loaded Races".success);
+        });
+
+        // Load Available Spells
+        db.query("SELECT * FROM spell").on('result', function (spell) {
+            var data = {
+                name: spell.name,
+                type: spell.type,
+                castTime: spell.castTime,
+                resource: spell.resource,
+                sParticles: spell.sParticles,
+                dParticles: spell.dParticles,
+                effects: {}
+            };
+            self._server.SpellAdd(spell.id, data);
+
+            db.query("SELECT effect_id FROM spelleffects2spells WHERE spell_id = ?", spell.id).on('result', function (spelleffects2spells) {
+                db.query("SELECT * FROM spelleffects WHERE id = ?", spelleffects2spells.effect_id).on('result', function (spelleffects) {
+                    var effectdata = {
+                        name: spelleffects.name,
+                        type: spelleffects.type,
+                        amount: spelleffects.amount,
+                        duration: spelleffects.duration
+                    };
+                    self._server.SpellEffectAdd(spelleffects.id, spell.id, effectdata);
+
+                });
+            });
+        }).on("end", function () {
+            util.log("Loaded Spells".success);
         });
 
         setInterval(function () {
