@@ -34,6 +34,10 @@ var Server = function () {
         classes: {},
         spells: {},
 
+        // Spell Effects in the world on the ground
+        activeGroundSpells: {},
+        activeTargetSpells: {},
+
         // Dynamic Content / Changes
         accounts: {},
         characters: {},
@@ -250,6 +254,14 @@ var Server = function () {
          */
         SpellEffectAdd: function (id, spell_id, effect) {
             self._server.classes[spell_id].effects[id] = effect;
+        },
+
+        ActiveGroundSpellAdd: function (id, spellData) {
+            self._server.activeGroundSpells[id] = spellData;
+        },
+
+        ActiveTargetSpellAdd: function (id, spellData) {
+            self._server.activeTargetSpells[id] = spellData;
         },
 
         /**
