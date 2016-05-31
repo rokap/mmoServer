@@ -227,19 +227,21 @@ module.exports = function (server, io, db) {
         var tmpCharacter = server.TmpCharacter(netID);
         var spells = {};
 
-        db.query("SELECT id,name,type,castTime,resource,sParticles,dParticles FROM characterspells as cs INNER JOIN spell as s ON cs.spell_id = s.id WHERE cs.character_id = ?", tmpCharacter.id).on("result", function (spell) {
-            var data = {
-                name: spell.name,
-                type: spell.type,
-                castTime: spell.castTime,
-                resource: spell.resource,
-                sParticles: spell.sParticles,
-                dParticles: spell.dParticles,
-                effects: {}
-            };
-            spells[spell.id] = data;
-            db.query("SELECT effect_id FROM spelleffects2spells WHERE spell_id = ?", spell.id).on('result', function (spelleffects2spells) {
-                db.query("SELECT * FROM spelleffects WHERE id = ?", spelleffects2spells.effect_id).on('result', function (spelleffects) {
+        getSpells(callback);
+        {
+            db.query("SELECT id,name,type,castTime,resource,sParticles,dParticles FROM characterspells as cs INNER JOIN spell as s ON cs.spell_id = s.id WHERE cs.character_id = ?", tmpCharacter.id).on("result", function (spell) {
+                var data = {
+                    name: spell.name,
+                    type: spell.type,
+                    castTime: spell.castTime,
+                    resource: spell.resource,
+                    sParticles: spell.sParticles,
+                    dParticles: spell.dParticles,
+                    effects: {}
+                };
+                spells[spell.id] = data;
+
+                db.query("SELECT id,name,type,amount,duration FROM spelleffects2spells as se2s INNER JOIN spelleffects as se ON se.id = se2s.effect_id WHERE spell_id = ?", spell.id).on('result', function (spelleffects) {
                     var effectdata = {
                         name: spelleffects.name,
                         type: spelleffects.type,
@@ -247,25 +249,35 @@ module.exports = function (server, io, db) {
                         duration: spelleffects.duration
                     };
                     spells[spell.id].effects[spelleffects.id] = effectdata;
+
+                }).on("end", function () {
+
                 });
+
+            }).on("end", function () {
+                callback(spell.id);
             });
-        });
+        }
 
-        var response = {};
+        getSpells(function () {
 
-        response = {
-            isMine: true,
-            character: tmpCharacter,
-            spells: spells
-        };
-        util.log((netID + " - out = " + JSON.stringify(response)).success);
-        server.Send(netID, 'account:onEnterWorld', response);
+            var response = {
+                isMine: true,
+                character: tmpCharacter,
+                spells: spells
+            };
+            util.log((netID + " - out = " + JSON.stringify(response)).success);
+            server.Send(netID, 'account:onEnterWorld', response);
 
-        response = {isMine: false, character: tmpCharacter};
-        server.SendToOtherCharacters(netID, 'account:onEnterWorld', response);
+            response = {isMine: false, character: tmpCharacter};
+            server.SendToOtherCharacters(netID, 'account:onEnterWorld', response);
 
-        server.CharacterAdd(netID, tmpCharacter);
-        server.TmpCharacterRemove(netID);
+            server.CharacterAdd(netID, tmpCharacter);
+            server.TmpCharacterRemove(netID);
+
+        })
+
+
     };
 
     /**
