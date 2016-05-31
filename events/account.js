@@ -236,26 +236,11 @@ module.exports = function (server, io, db) {
                     castTime: spell.castTime,
                     resource: spell.resource,
                     sParticles: spell.sParticles,
-                    dParticles: spell.dParticles,
-                    effects: {}
+                    dParticles: spell.dParticles
                 };
                 spells[spell.id] = data;
-
-                db.query("SELECT id,name,type,amount,duration FROM spelleffects2spells as se2s INNER JOIN spelleffects as se ON se.id = se2s.effect_id WHERE spell_id = ?", spell.id).on('result', function (spelleffects) {
-                    var effectdata = {
-                        name: spelleffects.name,
-                        type: spelleffects.type,
-                        amount: spelleffects.amount,
-                        duration: spelleffects.duration
-                    };
-                    spells[spell.id].effects[spelleffects.id] = effectdata;
-
-                }).on("end", function () {
-
-                });
-
             }).on("end", function () {
-                callback();
+                callback && callback();
             });
         }
 
