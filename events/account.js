@@ -227,7 +227,7 @@ module.exports = function (server, io, db) {
         var tmpCharacter = server.TmpCharacter(netID);
         var spells = {};
 
-        getSpells(callback);
+        function getSpells(callback)
         {
             db.query("SELECT id,name,type,castTime,resource,sParticles,dParticles FROM characterspells as cs INNER JOIN spell as s ON cs.spell_id = s.id WHERE cs.character_id = ?", tmpCharacter.id).on("result", function (spell) {
                 var data = {
