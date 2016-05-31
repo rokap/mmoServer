@@ -9,6 +9,19 @@ var util = require("util");
  */
 module.exports = function (server, io, db) {
 
+    var castTimer = function (castTime, netID, spell_id, spellData) {
+        return setTimeout(function () {
+            // Add to active spells
+            server.ActiveTargetSpellAdd(spell_id, spellData);
+            var packet = {
+                id: spellData.spell.id
+            };
+            // Inform caster, of its success;
+            server.Send(netID, "character:onCastComplete", packet);
+        }, castTime)
+
+    };
+
     /**
      * onMove Handler
      * @param data
@@ -20,7 +33,6 @@ module.exports = function (server, io, db) {
 
         // Get the current Character by Net ID
         var character = server.Character(netID);
-        var packet = {};
 
         // Update Server Character
         character.posX = data.posX;
@@ -56,29 +68,53 @@ module.exports = function (server, io, db) {
     this.onCast = function (data, socket) {
 
         var netID = socket.id;
+        var spell_id = data.sid;
+        var spell = server.Spell(spell_id);
+        var target;
+        var spellData;
 
-        var spell = server.Spell(data.spell_id);
+        switch (spell.type) {
+            // Ground
+            case 0:
+                target = {x: data.x, y: data.y, z: data.z};
+                spellData = {target: target, spell: spell};
+                server.ActiveGroundSpellAdd(spell_id, spellData);
+                break;
+
+            // target
+            case 1:
+                target = data.t;
+                spellData = {target: target, spell: spell};
+                break;
+        }
 
         var packet = {
-            n: spell.name,
-            ct: spell.castTime,
-            sp: spell.sParticles,
-            dp: spell.dParticles
+            sid: spell.id
         };
 
         // Send first Packet onCast,
         server.Send(netID, "character:onCast", packet);
 
         //delay based on castTime on server
-        setTimeout(function () {
+        castTimer(spell.castTime, netID, spell_id, spellData);
+    };
 
-            var packet = {
-                e: spell.effects
-            };
-            server.Send(netID, "character:onCastComplete", packet);
+    /**
+     * onInterrupt Handler
+     * @param data
+     * @param socket
+     */
+    this.onInterrupt = function (data, socket) {
+        var netID = socket.id;
+        var spell_id = data.sid;
 
-        }, spell.castTime);
+        clearTimeout(castTimer);
 
+        var packet = {
+            sid: spell_id
+        };
+        // Inform caster, of its success;
+        server.Send(netID, "character:onCastInterrupt", packet);
     };
 
     return this;
