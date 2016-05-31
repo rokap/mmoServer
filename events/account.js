@@ -225,9 +225,39 @@ module.exports = function (server, io, db) {
         if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
         var account = server.Account(netID);
         var tmpCharacter = server.TmpCharacter(netID);
+        var spells = {};
+
+        db.query("SELECT id,name,type,castTime,resource,sParticles,dParticles FROM characterspells as cs INNER JOIN spell as s ON cs.spell_id = s.id WHERE cs.character_id = ?", tmpCharacter.id).on("result", function (spell) {
+            var data = {
+                name: spell.name,
+                type: spell.type,
+                castTime: spell.castTime,
+                resource: spell.resource,
+                sParticles: spell.sParticles,
+                dParticles: spell.dParticles,
+                effects: {}
+            };
+            spells[spell.id] = data;
+            db.query("SELECT effect_id FROM spelleffects2spells WHERE spell_id = ?", spell.id).on('result', function (spelleffects2spells) {
+                db.query("SELECT * FROM spelleffects WHERE id = ?", spelleffects2spells.effect_id).on('result', function (spelleffects) {
+                    var effectdata = {
+                        name: spelleffects.name,
+                        type: spelleffects.type,
+                        amount: spelleffects.amount,
+                        duration: spelleffects.duration
+                    };
+                    spells[spell.id].effects[spelleffects.id] = effectdata;
+                });
+            });
+        });
+
         var response = {};
 
-        response = {isMine: true, character: tmpCharacter};
+        response = {
+            isMine: true,
+            character: tmpCharacter,
+            spells: spells
+        };
         util.log((netID + " - out = " + JSON.stringify(response)).success);
         server.Send(netID, 'account:onEnterWorld', response);
 
