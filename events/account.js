@@ -255,7 +255,7 @@ module.exports = function (server, io, db) {
                 });
 
             }).on("end", function () {
-                callback(spell.id);
+                callback();
             });
         }
 
