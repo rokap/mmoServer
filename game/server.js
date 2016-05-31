@@ -27,13 +27,17 @@ var Server = function () {
     // Internal
     this._server = {
 
+        config: config,
+
+        // Buffered Content / Requires Server Restart on changes
         races: {},
         classes: {},
         spells: {},
+
+        // Dynamic Content / Changes
         accounts: {},
         characters: {},
         tmpCharacters: {},
-        config: config,
 
         /**
          * Account
@@ -214,9 +218,36 @@ var Server = function () {
             self._server.classes[id] = _class;
         },
 
+        /**
+         * Spell
+         * @param id
+         * @returns {*}
+         * @constructor
+         */
+        Spell: function (id) {
+            if (self._server.spells[id] !== undefined)
+                return self._server.spells[id];
+            else
+                return false
+        },
+
+        /**
+         * SpellAdd
+         * @param id
+         * @param spell
+         * @constructor
+         */
         SpellAdd: function (id, spell) {
             self._server.classes[id] = spell;
         },
+
+        /**
+         * SpellEffectAdd
+         * @param id
+         * @param spell_id
+         * @param effect
+         * @constructor
+         */
         SpellEffectAdd: function (id, spell_id, effect) {
             self._server.classes[spell_id].effects[id] = effect;
         },
@@ -316,7 +347,6 @@ var Server = function () {
             next();
         });
         io.use(router);
-
 
         // Load Available Classes
         db.query("SELECT id,name,icon FROM classes").on('result', function (dbData) {
