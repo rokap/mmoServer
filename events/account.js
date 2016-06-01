@@ -225,7 +225,7 @@ module.exports = function (server, io, db) {
         if (data !== undefined) util.log((netID + " - in = " + JSON.stringify(data)).debug);
         var account = server.Account(netID);
         var tmpCharacter = server.TmpCharacter(netID);
-        var spells = {};
+        var spells = [];
 
         function getSpells(callback)
         {
@@ -238,7 +238,7 @@ module.exports = function (server, io, db) {
                     sParticles: spell.sParticles,
                     dParticles: spell.dParticles
                 };
-                spells[spell.id] = data;
+                spells.push(data);
             }).on("end", function () {
                 callback && callback();
             });
@@ -261,8 +261,6 @@ module.exports = function (server, io, db) {
             server.TmpCharacterRemove(netID);
 
         })
-
-
     };
 
     /**
