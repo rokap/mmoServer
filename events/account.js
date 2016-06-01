@@ -233,6 +233,7 @@ module.exports = function (server, io, db) {
                 var data = {
                     id: spell.id,
                     name: spell.name,
+                    icon: spell.icon,
                     type: spell.type,
                     castTime: spell.castTime,
                     resource: spell.resource,
