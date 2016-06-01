@@ -231,6 +231,7 @@ module.exports = function (server, io, db) {
         {
             db.query("SELECT id,name,type,castTime,resource,sParticles,dParticles FROM characterspells as cs INNER JOIN spell as s ON cs.spell_id = s.id WHERE cs.character_id = ?", tmpCharacter.id).on("result", function (spell) {
                 var data = {
+                    id: spell.id,
                     name: spell.name,
                     type: spell.type,
                     castTime: spell.castTime,
