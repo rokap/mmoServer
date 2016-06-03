@@ -125,11 +125,11 @@ var Server = function () {
          * @constructor
          */
         CharacterRemove: function (netID) {
-            
+
             util.log(netID + " Removing " + self._server.characters[netID].name);
 
             if (self._server.characters[netID] !== undefined) {
-                self._server.SendToOtherCharacters(netID, 'account:OnCharacterExit', response);
+                self._server.SendToOtherCharacters(netID, 'account:onCharacterExit', response);
                 delete self._server.characters[netID];
                 return true;
             }
