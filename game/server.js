@@ -350,11 +350,11 @@ var Server = function () {
                 var response = {
                     name: character.name
                 };
-                self._server.SendToOtherCharacters(netID, 'account:OnCharacterExit', response);
                 
                 self._server.CharacterRemove(netID);
                 self._server.AccountRemove(netID);
                 self._server.TmpCharacterRemove(netID);
+                self._server.SendToOtherCharacters(1, 'account:OnCharacterExit', response);
 
             });
         });
