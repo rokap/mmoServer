@@ -129,6 +129,10 @@ var Server = function () {
             util.log(netID + " Removing " + self._server.characters[netID].name);
 
             if (self._server.characters[netID] !== undefined) {
+                var response = {
+                    name: self._server.characters[netID].name
+                };
+
                 self._server.SendToOtherCharacters(netID, 'account:onCharacterExit', response);
                 delete self._server.characters[netID];
                 return true;
@@ -350,11 +354,6 @@ var Server = function () {
                 console.log("\n--- disconnect Batch ---".info);
                 util.log((netID + " - Disconnected").success);
 
-                var character = self._server.Character(netID);
-                var response = {
-                    name: character.name
-                };
-                
                 self._server.CharacterRemove(netID);
                 self._server.AccountRemove(netID);
                 self._server.TmpCharacterRemove(netID);
