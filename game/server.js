@@ -125,7 +125,11 @@ var Server = function () {
          * @constructor
          */
         CharacterRemove: function (netID) {
+            
+            util.log(netID + " Removing " + self._server.characters[netID].name);
+
             if (self._server.characters[netID] !== undefined) {
+                self._server.SendToOtherCharacters(netID, 'account:OnCharacterExit', response);
                 delete self._server.characters[netID];
                 return true;
             }
@@ -354,7 +358,6 @@ var Server = function () {
                 self._server.CharacterRemove(netID);
                 self._server.AccountRemove(netID);
                 self._server.TmpCharacterRemove(netID);
-                self._server.SendToOtherCharacters(1, 'account:OnCharacterExit', response);
 
             });
         });
