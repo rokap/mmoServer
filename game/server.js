@@ -250,7 +250,7 @@ var Server = function () {
          * @constructor
          */
         SpellAdd: function (id, spell) {
-            self._server.classes[id] = spell;
+            self._server.spells[id] = spell;
         },
 
         /**
